@@ -10,7 +10,8 @@ const TaskSchema = new Schema(
             Start : {type: Number, required: true},
             End : {type: Number, required: true}
         },
-        UserRef : {type: mongoose.ObjectId, ref: "User"}
+        UserRef : {type: mongoose.ObjectId, ref: "User"},
+        TeamRef : {type: mongoose.ObjectId, ref: "Team"}
     }
 )
 

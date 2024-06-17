@@ -6,13 +6,14 @@ const {
     getTask,
     getTasks,
     updateTask,
-    deleteTask
+    deleteTask,
+    getTaskFromUser
 } = require('../controllers/task.controller')
 
 router.get("/", getTasks);
 router.get("/:page-:limit", getTasks)
 router.get("/:id", getTask);
-router.get("/byuser/:id");
+router.get("/byuser/:id", getTaskFromUser);
 router.get("/byteam/:id");
 
 router.patch("/:id", updateTask)

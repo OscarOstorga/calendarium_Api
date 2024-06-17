@@ -92,10 +92,24 @@ const getTaskFromUser = async (req, res, next) => {
     }
 }
 
+const getTaskFromTeam = async (req, res, next) => {
+    try{
+        const {id} = req.params;
+        const UserTasks = await Task.find({UserRef : id})
+
+        if(!UserTasks) throw httpError(404, "No Tasks found");
+        res.status(200).json({ message:"Tasks Found", data: UserTasks});
+
+    } catch(error) {
+        next(error);
+    }
+}
+
 module.exports = {
     createTask,
     getTask,
     getTasks,
     updateTask,
-    deleteTask
+    deleteTask,
+    getTaskFromUser
 }
