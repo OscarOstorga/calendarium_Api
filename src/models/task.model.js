@@ -9,6 +9,6 @@ const TaskSchema = new Schema(
             Start : {Type: Number, required: true},
             End : {type: Number, required: true}
         },
-        User : {type: ObjectId, ref: "User", required: true}
+        UserRef : {type: ObjectId, ref: "User", required: true}
     }
 )
