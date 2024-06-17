@@ -5,7 +5,11 @@ const TaskSchema = new Schema(
     {
         Name : {type: String, required: true},
         Description : {type: String},
-        Date : {type: String, required: true},
+        Date : {
+            Day : Number,
+            Month : Number, 
+            Year : Number,
+        },
         Time : {
             Start : {type: Number, required: true},
             End : {type: Number, required: true}
