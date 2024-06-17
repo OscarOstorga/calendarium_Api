@@ -1,4 +1,4 @@
-const {Schema, Model, trusted} = require("mongoose")
+const {Schema, model} = require("mongoose")
 
 const UserSchema = new Schema(
     {
@@ -12,4 +12,4 @@ const UserSchema = new Schema(
     }
 );
 
-module.exports = Model("User", UserSchema)
+module.exports = model("User", UserSchema)
