@@ -1,5 +1,6 @@
 const httpError = require("http-errors")
-const Task = require("../models/task.model")
+const Task = require("../models/task.model");
+const { response } = require("express");
 
 const createTask = async(req, res, next) => {
     try{
@@ -79,7 +80,7 @@ const getTasks = async (req, res, next) => {
     }
 }
 
-const getTaskFromUser = async (req, res, next) => {
+const getTasksFromUser = async (req, res, next) => {
     try{
         const {id} = req.params;
         const UserTasks = await Task.find({UserRef : id})
@@ -92,12 +93,50 @@ const getTaskFromUser = async (req, res, next) => {
     }
 }
 
-const getTaskFromTeam = async (req, res, next) => {
+const getTasksFromTeam = async (req, res, next) => {
     try{
         const {id} = req.params;
         const UserTasks = await Task.find({UserRef : id})
 
         if(!UserTasks) throw httpError(404, "No Tasks found");
+        res.status(200).json({ message:"Tasks Found", data: UserTasks});
+
+    } catch(error) {
+        next(error);
+    }
+}
+
+const getTasksFromUserAtDate = async (req, res, next) => {
+    try{
+        const {id, day, month, year} = req.params;
+        let UserTasks = null
+
+        if( parseInt(day) == 0) {
+            UserTasks = await Task.find({UserRef : id, Month: month, Year : year})
+        } else {
+            UserTasks = await Task.find({UserRef : id, Day : day, Month: month, Year : year})
+        }
+        
+        if(!UserTasks) throw httpError(404, String(response));
+        res.status(200).json({ message:"Tasks Found", data: UserTasks});
+
+    } catch(error) {
+        next(error);
+    }
+}
+
+const getTasksFromTeamAtDate = async (req, res, next) => {
+    try{
+        const {id, day, month, year} = req.params;
+        let UserTasks = null
+
+        if( parseInt(day) == 0) {
+            UserTasks = await Task.find({UserRef : id, Month: month, Year : year})
+        } else {
+            UserTasks = await Task.find({UserRef : id, Day : day, Month: month, Year : year})
+        }
+        
+        if(!UserTasks) throw httpError(404, String(response));
         res.status(200).json({ message:"Tasks Found", data: UserTasks});
 
     } catch(error) {
@@ -111,5 +150,8 @@ module.exports = {
     getTasks,
     updateTask,
     deleteTask,
-    getTaskFromUser
+    getTasksFromUser,
+    getTasksFromTeam,
+    getTasksFromUserAtDate,
+    getTasksFromTeamAtDate
 }

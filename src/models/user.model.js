@@ -8,7 +8,6 @@ const UserSchema = new Schema(
         },
         UserName : {type: String, required: true},
         Password : {type: String, required: true},
-        IsLeader : {type: Boolean, required: true}
     }
 );
 

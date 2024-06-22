@@ -5,7 +5,8 @@ const TeamSchema = new Schema(
     {
         TeamName : {type: String, required: true},
         TeamCode : {type: String, required: true},
-        Users : [{type: Schema.Types.ObjectId}]
+        Users : [{type: Schema.Types.ObjectId}],
+        Leader : {type: Schema.Types.ObjectId, required: true}
     }
 );  
 
