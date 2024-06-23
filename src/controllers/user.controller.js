@@ -1,5 +1,26 @@
-const httpError = require("http-errors")
-const User = require("../models/user.model")
+const jwt = require("jsonwebtoken");
+const httpError = require("http-errors");
+const bcrypt = require("bcrypt");
+const User = require("../models/user.model");
+const envconfig = require("../config/env.config");
+
+
+
+
+
+const registerUser = async(req, res, next) =>{
+    try {
+        const { username, email, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({ username, email, password: hashedPassword });
+        const savedUser = await newUser.save();
+        if (!savedUser) throw httpError(500, "User not Created");
+        res.status(201).json({ message: "User Created", data: savedUser });
+    } catch (error) {
+        next(error);
+    }
+
+}
 
 const createUser = async(req, res, next) => {
     try{
@@ -43,6 +64,7 @@ const updateUser = async (req, res, next) => {
     }
 }
 
+
 const deleteUser = async(req, res, next) => {
     try{
         const { id } = req.params;
@@ -79,10 +101,40 @@ const getUsers = async (req, res, next) => {
     }
 }
 
+const loginUser = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) throw httpError(404, "User not found");
+
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) throw httpError(401, "Invalid credentials");
+
+        const token = jwt.sign({ id: user._id }, envconfig.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ message: "Login successful", token });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const authenticateToken = (req, res, next) => {
+    const token = req.headers['authorization'];
+    if (!token) return res.sendStatus(403);
+
+    jwt.verify(token, envconfig.JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+};
+
 module.exports = {
+    registerUser,
+    loginUser,
+    authenticateToken,
     createUser,
     getUser,
     getUsers,
     updateUser,
     deleteUser
-}
+};

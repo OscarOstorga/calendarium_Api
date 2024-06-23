@@ -2,12 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    createUser,
+    registerUser,
+    loginUser,
     getUser,
     getUsers,
     updateUser,
-    deleteUser
+    deleteUser,
+    createUser
 } = require('../controllers/user.controller')
+
+router.post('/register', registerUser)
+
+router.post('login', loginUser)
 
 router.get("/", getUsers);
 router.get("/:page-:limit", getUsers)
