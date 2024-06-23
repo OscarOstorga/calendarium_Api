@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const httpError = require("http-errors");
-const bcrypt = require("bcrypt");
 const User = require("../models/user.model");
 const envconfig = require("../config/env.config");
 
