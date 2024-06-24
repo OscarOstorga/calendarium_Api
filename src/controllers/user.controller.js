@@ -87,10 +87,10 @@ const getUsers = async (req, res, next) => {
 
 const registerUser = async(req, res, next) =>{
     try {
-        const {Name, username, password } = req.body;
+        const {Name, Username, Password } = req.body;
 
         const hashedPassword = await new Promise((resolve, reject) => {
-            bcrypt.hash(password, 10, function(err, hash) {
+            bcrypt.hash(Password, 10, function(err, hash) {
                 if (err) reject(err)
                 resolve(hash)
             });
@@ -98,7 +98,7 @@ const registerUser = async(req, res, next) =>{
 
         const newUser = new User({ 
             Name: {first : Name.First, last: Name.Last},
-            UserName: username, Password: await hashedPassword });
+            UserName: Username, Password: await hashedPassword });
             
         const savedUser = await newUser.save();
         if (!savedUser) throw httpError(500, "User not Created");
