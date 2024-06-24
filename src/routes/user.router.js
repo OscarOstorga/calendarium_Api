@@ -13,7 +13,7 @@ const {
 
 router.post('/register', registerUser)
 
-router.post('login', loginUser)
+router.post('/login', loginUser)
 
 router.get("/", getUsers);
 router.get("/:page-:limit", getUsers)

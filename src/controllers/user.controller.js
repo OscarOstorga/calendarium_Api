@@ -2,24 +2,8 @@ const jwt = require("jsonwebtoken");
 const httpError = require("http-errors");
 const User = require("../models/user.model");
 const envconfig = require("../config/env.config");
+const bcrypt = require('bcrypt');
 
-
-
-
-
-const registerUser = async(req, res, next) =>{
-    try {
-        const { username, email, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
-        const savedUser = await newUser.save();
-        if (!savedUser) throw httpError(500, "User not Created");
-        res.status(201).json({ message: "User Created", data: savedUser });
-    } catch (error) {
-        next(error);
-    }
-
-}
 
 const createUser = async(req, res, next) => {
     try{
@@ -53,6 +37,7 @@ const updateUser = async (req, res, next) => {
         const { body } = req;
         const _User = await User.findById(id);
         if(!_User) throw httpError(404, "User not found");
+
 
         const updatedUser =  await User.findByIdAndUpdate(id, body, {new: true})
 
@@ -100,17 +85,47 @@ const getUsers = async (req, res, next) => {
     }
 }
 
+const registerUser = async(req, res, next) =>{
+    try {
+        const {Name, username, password } = req.body;
+
+        const hashedPassword = await new Promise((resolve, reject) => {
+            bcrypt.hash(password, 10, function(err, hash) {
+                if (err) reject(err)
+                resolve(hash)
+            });
+          }) 
+
+        const newUser = new User({ 
+            Name: {first : Name.First, last: Name.Last},
+            UserName: username, Password: await hashedPassword });
+            
+        const savedUser = await newUser.save();
+        if (!savedUser) throw httpError(500, "User not Created");
+
+        res.status(201).json({ message: "User Created", data: savedUser });
+    } catch (error) {
+        next(error);
+    }
+
+}
+
 const loginUser = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const { username, password } = req.body;
+        const user = await User.find({ UserName: username });
         if (!user) throw httpError(404, "User not found");
 
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) throw httpError(401, "Invalid credentials");
+        const isMatch = await new Promise((resolve, reject) => {
+            bcrypt.compare(password, user[0].Password, function(err, result) {
+                if (err) reject(err)
+                resolve(result)
+            });
+        })
 
-        const token = jwt.sign({ id: user._id }, envconfig.JWT_SECRET, { expiresIn: '1h' });
-        res.status(200).json({ message: "Login successful", token });
+        if (await !isMatch) throw httpError(401, "Invalid credentials");
+        res.status(200).json({ message: "Login successful", data: user });
+ 
     } catch (error) {
         next(error);
     }
