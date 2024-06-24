@@ -43,6 +43,32 @@ const updateTeam = async (req, res, next) => {
     }
 }
 
+
+const joinTeamByCode = async (req, res, next) => {
+    const { userId, teamCode } = req.body;
+
+    try {
+        const team = await Team.findOne({ teamCode: teamCode });
+        if (!team) {
+            return res.status(404).send({ message: "Team not found" });
+        }
+
+        // Check if user is already a member
+        if (team.members.includes(userId)) {
+            return res.status(400).send({ message: "User already in team" });
+        }
+
+        // Add user to team members
+        team.members.push(userId);
+        const updatedTeam = await team.save();
+        res.status(200).json({ message: "User added to team successfully", data: updatedTeam });
+    } catch (error) {
+        console.error("Error joining team:", error);
+        next(error);
+    }
+};
+
+
 const deleteTeam = async(req, res, next) => {
     try{
         const { id } = req.params;
@@ -84,5 +110,6 @@ module.exports = {
     getTeam,
     getTeams,
     updateTeam,
-    deleteTeam
+    deleteTeam,
+    joinTeamByCode
 }
