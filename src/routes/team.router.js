@@ -18,6 +18,6 @@ router.patch("/:id", updateTeam)
 router.post("/", createTeam)
 router.delete("/:id", deleteTeam)
 
-router.post("/team/joinByCode", joinTeamByCode)
+router.post("/joinByCode", joinTeamByCode)
 
 module.exports = router;

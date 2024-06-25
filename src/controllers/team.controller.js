@@ -1,5 +1,6 @@
 const httpError = require("http-errors")
 const Team = require("../models/team.model")
+const mongoose = require("mongoose")
 
 //Code Generator
 function randomStr(len, arr) {
@@ -73,19 +74,23 @@ const joinTeamByCode = async (req, res, next) => {
     const { userId, teamCode } = req.body;
 
     try {
-        const team = await Team.findOne({ teamCode: teamCode });
+        const team = await Team.findOne({ TeamCode: teamCode });
+        
         if (!team) {
             return res.status(404).send({ message: "Team not found" });
         }
 
         // Check if user is already a member
-        if (team.members.includes(userId)) {
+        if (team.Users.includes(new mongoose.mongo.ObjectId(userId))) {
             return res.status(400).send({ message: "User already in team" });
         }
 
+        const newUsers = team.Users
+        newUsers.push(userId)
+
         // Add user to team members
-        team.members.push(userId);
-        const updatedTeam = await team.save();
+
+        const updatedTeam = await Team.findOneAndUpdate({TeamCode: teamCode}, {Users: newUsers}, {new: true} );
         res.status(200).json({ message: "User added to team successfully", data: updatedTeam });
     } catch (error) {
         console.error("Error joining team:", error);
