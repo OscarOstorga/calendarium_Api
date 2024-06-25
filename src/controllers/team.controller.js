@@ -1,10 +1,35 @@
 const httpError = require("http-errors")
 const Team = require("../models/team.model")
 
+//Code Generator
+function randomStr(len, arr) {
+    let ans = '';
+    for (let i = len; i > 0; i--) {
+        ans +=
+            arr[(Math.floor(Math.random() * arr.length))];
+    }
+
+    return ans
+}
+
+//Checks uniqueness
+const isCodeUnique = async (code) => {
+    const existingDocument = await Team.findOne({ TeamCode: code });
+    return !existingDocument;
+};
+
 const createTeam = async(req, res, next) => {
+    let isUnique = false
+    let newCode
     try{
         const { body } = req;
         const newTeam = new Team(body);
+
+        while(!isUnique){
+            newCode = randomStr(5, "ABDCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
+            isUnique = await isCodeUnique(newCode)
+        }
+        newTeam.TeamCode = newCode
         const savedTeam = await newTeam.save();
 
         if(!savedTeam) throw httpError(500, "Team not Created");
