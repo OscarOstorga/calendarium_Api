@@ -24,7 +24,8 @@ const createTeam = async(req, res, next) => {
     let newCode
     try{
         const { body } = req;
-        const newTeam = new Team(body);
+        let newTeam = new Team(body);
+        newTeam.Users.push(newTeam.Leader)
 
         while(!isUnique){
             newCode = randomStr(5, "ABDCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
